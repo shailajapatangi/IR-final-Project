@@ -1,0 +1,51 @@
+{% load static %}
+{% block content %}
+<head>
+    <meta charset="UTF-8">
+    <title>something</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="{% static 'climate.css' %}">
+
+</head>
+<body>
+	<!-- The form -->
+<form class="example" action="getSearchQuery">
+	<div id="search">
+  <input type="text" placeholder="Search.." name="search" id="searchValue" value="{{search_term}}">
+  <button type="submit"><i class="fa fa-search"></i></button>
+</div>
+    <div id="display">
+
+    </div>
+</form>
+
+<!-- Tab links -->
+<div class="tab">
+    <a href="getCustomResults"><button class="tablinks">Our custom results</button></a>
+
+
+    <a href="getGoogleResults"+search><button class="tablinks">Google results</button></a>
+
+    <a href="getBingResults"><button class="tablinks">Bing Results</button></a>
+    <a href="getClusterResults"><button class="tablinks">Cluster Results</button></a>
+    <a href="getQueryExpansionResults"><button class="tablinks">Query Expansion</button></a>
+</div>
+
+
+<script>
+function openTab(evt, cityName) {
+  var i, tabcontent, tablinks;
+  tabcontent = document.getElementsByClassName("tabcontent");
+  for (i = 0; i < tabcontent.length; i++) {
+    tabcontent[i].style.display = "none";
+  }
+  tablinks = document.getElementsByClassName("tablinks");
+  for (i = 0; i < tablinks.length; i++) {
+    tablinks[i].className = tablinks[i].className.replace(" active", "");
+  }
+  document.getElementById(cityName).style.display = "block";
+  evt.currentTarget.className += " active";
+}
+</script>
+</body>
+{% endblock %}
