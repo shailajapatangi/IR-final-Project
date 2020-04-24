@@ -5,13 +5,18 @@ from googleapiclient.discovery import build
 import json
 
 import requests
+
+from .hits import hits
+
 subscription_key = "7ba2665d89574bed9b0e887c41b882a5"
 assert subscription_key
 
 search_url = "https://api.cognitive.microsoft.com/bing/v7.0/search"
-search_term=""
+search_term = ""
 
 def getClimateData(request):
+    hits.get_url_map()
+    hits.get_adj_lis()
     return render(request, 'Climate_App/climate.html')
 
 def getGoogleResults(request):
@@ -23,7 +28,12 @@ def getGoogleResults(request):
     #return render(request, 'Climate_App/googleResults.html')
 
 def getCustomResults(request):
-    return render(request, 'Climate_App/customResults.html')
+    url = "http://ec2-35-171-122-69.compute-1.amazonaws.com:8983/solr/nutch/select?q=content:\"" + str(
+        search_term) + "\" OR title:\"" + str(search_term) + "\" OR id:\"" + str(search_term) + "\""
+    response = requests.get(url)
+    search_results = response.json()
+
+    return render(request, 'Climate_App/customResults.html', {"results": search_results})
 
 def getBingResults(request):
     headers = {"Ocp-Apim-Subscription-Key": subscription_key}
@@ -41,9 +51,19 @@ def getQueryExpansionResults(request):
     return render(request, 'Climate_App/queryExpansionResults.html')
 
 
-
 def getSearchQuery(request):
     global search_term
+    # hits.get_url_map()
+    # hits.get_adj_lis()
     search_term = request.GET['search']
     return render(request, 'Climate_App/climate.html', {"search_term" : search_term})
 
+def getHitsResults(request):
+    global search_term
+    url = "http://ec2-35-171-122-69.compute-1.amazonaws.com:8983/solr/nutch/select?q=content:\"" + str(
+        search_term) + "\" OR title:\"" + str(search_term) + "\" OR id:\"" + str(search_term) + "\""
+    response = requests.get(url)
+    results = response.json()
+    print(len(results))
+    search_results = hits.get_hits(results)
+    return render(request, 'Climate_App/hitsResults.html', {"results": search_results})
