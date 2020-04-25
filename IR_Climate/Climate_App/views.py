@@ -41,7 +41,6 @@ def getGoogleResults(request):
      service = build("customsearch", "v1", developerKey=my_api_key)
      res = service.cse().list(q=search_term, cx=my_cse_id).execute()
      return render(request, 'Climate_App/googleResults.html', {"google": json.dumps(res)})
-    #return render(request, 'Climate_App/googleResults.html')
 
 def getCustomResults(request):
     url = "http://ec2-35-171-122-69.compute-1.amazonaws.com:8983/solr/nutch/select?q=content:\"" + str(
