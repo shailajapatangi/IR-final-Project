@@ -9,7 +9,7 @@ from sklearn.cluster import KMeans, MiniBatchKMeans
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 import requests
-
+import pandas as pd
 from .hits import hits
 
 subscription_key = "7ba2665d89574bed9b0e887c41b882a5"
@@ -49,7 +49,16 @@ def getBingResults(request):
     return render(request, 'Climate_App/bingResults.html', {"bing": y})
 
 def getClusterResults(request):
-    return render(request, 'Climate_App/clusterResults.html')
+    global search_term
+    search_term=request.GET['search']
+    model=joblib.load('clustering_model.pkl')
+    vectorizer=joblib.load('vectorizer.pkl')
+    search=vectorizer.transform([search_term])
+    results=model.predict(search)
+    print(results)
+    return render(request,'Climate_App/clusteringResults.html',{"results":results})
+
+#     return render(request, 'Climate_App/clusterResults.html')
 
 def getQueryExpansionResults(request):
     return render(request, 'Climate_App/queryExpansionResults.html')
