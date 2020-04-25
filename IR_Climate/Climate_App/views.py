@@ -1,3 +1,5 @@
+import os
+
 from django.shortcuts import render
 from django.http import HttpResponse
 from googleapiclient.discovery import build
@@ -18,9 +20,19 @@ assert subscription_key
 search_url = "https://api.cognitive.microsoft.com/bing/v7.0/search"
 search_term = ""
 
+cwd = os.getcwd()
+
+class clusterModel():
+    model = joblib.load(cwd + '/Climate_App/clustering_model_zip.pkl')
+    vectorizer = joblib.load(cwd + '/Climate_App/vectorizer_zip.pkl')
+
+clusterData = clusterModel()
+
 def getClimateData(request):
     hits.get_url_map()
     hits.get_adj_lis()
+
+
     return render(request, 'Climate_App/climate.html')
 
 def getGoogleResults(request):
@@ -49,25 +61,16 @@ def getBingResults(request):
     return render(request, 'Climate_App/bingResults.html', {"bing": y})
 
 def getClusterResults(request):
-    global search_term
-    search_term=request.GET['search']
-    model=joblib.load('clustering_model_zip.pkl')
-    vectorizer=joblib.load('vectorizer_zip.pkl')
-    search=vectorizer.transform([search_term])
-    results=model.predict(search)
-    print(results)
-    final_res=[]
-    urls=pd.read_csv('Clustered_results_final.csv')
-#     print(urls.head())
-    # for cols in urls.columns:
-    clusters=urls.cluster
+    global search_term, model, vectorizer
+    search = clusterData.vectorizer.transform([search_term])
+    results = clusterData.model.predict(search)
+    final_res = []
+    urls = pd.read_csv(cwd +'/Climate_App/Clustered_results_final.csv')
+    clusters = urls.cluster
     for i,val in enumerate(clusters.values):
-        if val==predicted:
+        if val == results:
             final_res.append(urls['id'].values[i])
-
-    return render(request,'Climate_App/clusteringResults.html',{"results":results})
-
-#     return render(request, 'Climate_App/clusterResults.html')
+    return render(request,'Climate_App/clusterResults.html', {"results":final_res})
 
 def getQueryExpansionResults(request):
     return render(request, 'Climate_App/queryExpansionResults.html')
@@ -89,15 +92,3 @@ def getHitsResults(request):
     print(len(results))
     search_results = hits.get_hits(results)
     return render(request, 'Climate_App/hitsResults.html', {"results": search_results})
-
-def getClusteringResults(request):
-    global search_term
-    search_term=request.GET['search']
-    model=joblib.load('clustering_model.pkl')
-    vectorizer=joblib.load('vectorizer.pkl')
-    search=vectorizer.transform([search_term])
-    results=model.predict(search)
-    print(results)
-    return render(request,'Climate_App/clusteringResults.html',{"results":results})
-
-    
