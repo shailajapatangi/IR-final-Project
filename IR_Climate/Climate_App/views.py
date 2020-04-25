@@ -62,7 +62,7 @@ def getClusterResults(request):
     # for cols in urls.columns:
     clusters=urls.cluster
     for i,val in enumerate(clusters.values):
-        if val==predicted:
+        if val==results:
             final_res.append(urls['id'].values[i])
 
     return render(request,'Climate_App/clusteringResults.html',{"results":results})
