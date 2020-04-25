@@ -56,6 +56,15 @@ def getClusterResults(request):
     search=vectorizer.transform([search_term])
     results=model.predict(search)
     print(results)
+    final_res=[]
+    urls=pd.read_csv('Clustered_results_final.csv')
+#     print(urls.head())
+    # for cols in urls.columns:
+    clusters=urls.cluster
+    for i,val in enumerate(clusters.values):
+        if val==predicted:
+            final_res.append(urls['id'].values[i])
+
     return render(request,'Climate_App/clusteringResults.html',{"results":results})
 
 #     return render(request, 'Climate_App/clusterResults.html')
