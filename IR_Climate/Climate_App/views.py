@@ -3,7 +3,11 @@ from django.http import HttpResponse
 from googleapiclient.discovery import build
 # Create your views here.
 import json
-
+import sklearn
+import joblib
+from sklearn.cluster import KMeans, MiniBatchKMeans
+import pandas as pd
+from sklearn.feature_extraction.text import TfidfVectorizer
 import requests
 
 from .hits import hits
@@ -67,3 +71,15 @@ def getHitsResults(request):
     print(len(results))
     search_results = hits.get_hits(results)
     return render(request, 'Climate_App/hitsResults.html', {"results": search_results})
+
+def getClusteringResults(request):
+    global search_term
+    search_term=request.GET['search']
+    model=joblib.load('clustering_model.pkl')
+    vectorizer=joblib.load('vectorizer.pkl')
+    search=vectorizer.transform([search_term])
+    results=model.predict(search)
+    print(results)
+    return render(request,'Climate_App/clusteringResults.html',{"results":results})
+
+    
