@@ -51,8 +51,8 @@ def getBingResults(request):
 def getClusterResults(request):
     global search_term
     search_term=request.GET['search']
-    model=joblib.load('clustering_model.pkl')
-    vectorizer=joblib.load('vectorizer.pkl')
+    model=joblib.load('clustering_model_zip.pkl')
+    vectorizer=joblib.load('vectorizer_zip.pkl')
     search=vectorizer.transform([search_term])
     results=model.predict(search)
     print(results)
