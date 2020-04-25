@@ -28,11 +28,17 @@ class clusterModel():
 
 clusterData = clusterModel()
 
+def getResults():
+    global search_term
+    url = "http://ec2-35-171-122-69.compute-1.amazonaws.com:8983/solr/nutch/select?q=content:\"" + str(
+        search_term) + "\" OR title:\"" + str(search_term) + "\" OR id:\"" + str(search_term) + "\""
+    response = requests.get(url)
+    search_results = response.json()
+    return search_results
+
 def getClimateData(request):
     hits.get_url_map()
     hits.get_adj_lis()
-
-
     return render(request, 'Climate_App/climate.html')
 
 def getGoogleResults(request):
@@ -43,11 +49,7 @@ def getGoogleResults(request):
      return render(request, 'Climate_App/googleResults.html', {"google": json.dumps(res)})
 
 def getCustomResults(request):
-    url = "http://ec2-35-171-122-69.compute-1.amazonaws.com:8983/solr/nutch/select?q=content:\"" + str(
-        search_term) + "\" OR title:\"" + str(search_term) + "\" OR id:\"" + str(search_term) + "\""
-    response = requests.get(url)
-    search_results = response.json()
-
+    search_results = getResults()
     return render(request, 'Climate_App/customResults.html', {"results": search_results})
 
 def getBingResults(request):
@@ -60,34 +62,36 @@ def getBingResults(request):
     return render(request, 'Climate_App/bingResults.html', {"bing": y})
 
 def getClusterResults(request):
-    global search_term, model, vectorizer
+    global search_term
+    search_results = getResults()
+    docs = search_results['response']['docs']
     search = clusterData.vectorizer.transform([search_term])
     results = clusterData.model.predict(search)
     final_res = []
+    cluster_results = []
+    normal_results = []
     urls = pd.read_csv(cwd +'/Climate_App/Clustered_results_final.csv')
     clusters = urls.cluster
     for i,val in enumerate(clusters.values):
         if val == results:
             final_res.append(urls['id'].values[i])
-    return render(request,'Climate_App/clusterResults.html', {"results":final_res})
+    for i in range(0, len(docs)):
+        if docs[i]['url'] in final_res:
+            cluster_results.append(docs[i])
+        else:
+            normal_results.append(docs[i])
+    cluster_results.extend(normal_results)
+    return render(request, 'Climate_App/clusterResults.html', {"results": cluster_results})
 
 def getQueryExpansionResults(request):
     return render(request, 'Climate_App/queryExpansionResults.html')
 
-
 def getSearchQuery(request):
     global search_term
-    # hits.get_url_map()
-    # hits.get_adj_lis()
     search_term = request.GET['search']
     return render(request, 'Climate_App/climate.html', {"search_term" : search_term})
 
 def getHitsResults(request):
-    global search_term
-    url = "http://ec2-35-171-122-69.compute-1.amazonaws.com:8983/solr/nutch/select?q=content:\"" + str(
-        search_term) + "\" OR title:\"" + str(search_term) + "\" OR id:\"" + str(search_term) + "\""
-    response = requests.get(url)
-    results = response.json()
-    print(len(results))
+    results = getResults()
     search_results = hits.get_hits(results)
     return render(request, 'Climate_App/hitsResults.html', {"results": search_results})

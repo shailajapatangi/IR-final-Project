@@ -1,4 +1,4 @@
-{% block content %}
+  {% block content %}
      <head>
          <style>
              .text {
@@ -7,10 +7,6 @@
                    display: -webkit-box;
                    -webkit-line-clamp: 2; /* number of lines to show */
                    -webkit-box-orient: vertical;
-             }
-             .container{
-                 display: flex;
-                flex-direction: column;
              }
          </style>
  <script>
@@ -22,11 +18,16 @@
 
       for (let  i = 0; i < maxIteration; i++) {
         var item = results[i];
-        // div.innerHTML = div.innerHTML + "<p color=class='inner' id="+i+">"+"<h1 style="+"font-size:20px;color:blue;"+">"+item.title+" </h1>" +"</p>" ;
-        div.innerHTML = div.innerHTML + "<a class='inner ' id="+i+" href="+item+">" + item + "</a>" ;
-        // div.innerHTML = div.innerHTML + "<p class='inner text' id="+i+">"+ item.content +"</p>" ;
+        div.innerHTML = div.innerHTML + "<p color=class='inner' id="+i+">"+"<h1 style="+"font-size:20px;color:blue;"+">"+item.title+" </h1>" +"</p>" ;
+        div.innerHTML = div.innerHTML + "<a class='inner' id="+i+" href="+item.url+">" + item.url + "</a>" ;
+        div.innerHTML = div.innerHTML + "<p class='inner text' id="+i+">"+ item.content +"</p>" ;
         // div.innerHTML = div.innerHTML + "<a class='inner' id="+i+" href="+item.formattedUrl+">" + item.formattedUrl + "</a>" ;
         // div.innerHTML = div.innerHTML + "<p class='inner' id="+i+">"+ item.formattedUrl +"</p>" + "<br>" + "<br/>" ";
+
+        //div.innerHTML = div.innerHTML + "<a class='inner' id="+i+" href="+item.displayLink+"></a>" + "<br>";
+        console.log(item);
+        // in production code, item.htmlTitle should have the HTML entities escaped.
+        //document.getElementById("content").innerHTML += "<br>" + item.htmlTitle;
       }
     }
     window.onload = displayResults;
