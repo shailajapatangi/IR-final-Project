@@ -22,6 +22,8 @@ search_term = ""
 
 cwd = os.getcwd()
 
+hits.get_url_map()
+hits.get_adj_lis()
 class clusterModel():
     model = joblib.load(cwd + '/Climate_App/clustering_model_zip.pkl')
     vectorizer = joblib.load(cwd + '/Climate_App/vectorizer_zip.pkl')
@@ -44,8 +46,6 @@ def getResults():
     return search_results
 
 def getClimateData(request):
-    hits.get_url_map()
-    hits.get_adj_lis()
     return render(request, 'Climate_App/climate.html')
 
 def getGoogleResults(request):
@@ -101,4 +101,5 @@ def getSearchQuery(request):
 def getHitsResults(request):
     results = getResults()
     search_results = hits.get_hits(results)
+    print(len(search_results))
     return render(request, 'Climate_App/hitsResults.html', {"results": search_results})
