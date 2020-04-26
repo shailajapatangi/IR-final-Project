@@ -30,8 +30,15 @@ clusterData = clusterModel()
 
 def getResults():
     global search_term
-    url = "http://ec2-35-171-122-69.compute-1.amazonaws.com:8983/solr/nutch/select?q=content:\"" + str(
-        search_term) + "\" OR title:\"" + str(search_term) + "\" OR id:\"" + str(search_term) + "\""
+    search_term_list = search_term.split(" ")
+    search_term_query = ""
+    search_term_list_length = len(search_term_list)
+    for i in range(0, search_term_list_length):
+        search_term_query += search_term_list[i]
+        if (search_term_list_length - 1) != i:
+            search_term_query += " AND "
+        search_term_query += search_term_list[i]
+    url = "http://ec2-35-171-122-69.compute-1.amazonaws.com:8983/solr/nutch/select?q=content: (" + str(search_term) + ") OR title: (" + str(search_term) + ") OR id: (" + str(search_term) + ")"
     response = requests.get(url)
     search_results = response.json()
     return search_results
